@@ -49,7 +49,7 @@ const storage = multer.diskStorage({
 const upload = multer({storage:storage});
 
 app.post("/images/add", upload.single("imageFile"), (req,res) =>{
-    res.send("/images");
+    res.redirect("/images");
 });
 
 app.get("/images", function(req,res){
