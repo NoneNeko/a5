@@ -63,6 +63,37 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 app.get("/employees", (req,res) =>{
+    if(req.query.status){
+        dataService.getEmployeesByStatus(req.query).then((data) =>{
+            const status = data;
+            let resText = "<br>";
+            resText = JSON.stringify(status) + "<br>";
+            res.send(resText);
+        }).catch((err) =>{
+            res.send("{message: }", err);
+        })
+    }
+    else if(req.query.department){
+        dataService.getEmployeesByDepartment(req.query).then((data) =>{
+            const department = data;
+            let resText = "<br>";
+            resText = JSON.stringify(department) + "<br>";
+            res.send(resText);
+        }).catch((err) =>{
+            res.send("{message: }", err);
+        })
+    }
+    else if(req.query.manager){
+        dataService.getEmployeesByManager(req.query).then((data) =>{
+            const manager = data;
+            let resText = "<br>";
+            resText = JSON.stringify(manager) + "<br>";
+            res.send(resText);
+        }).catch((err) =>{
+            res.send("{message: }", err);
+        })
+    }
+    else {
     dataService.getAllEmployees().then((data)=>{
         const employee = data;
         let resText = "<br>";
@@ -71,6 +102,19 @@ app.get("/employees", (req,res) =>{
     }).catch((err) =>{
         res.send("{message: }", err);
     });
+    }
+});
+
+app.get("/employee/:value", function(req,res){
+    dataService.getEmployeeByNum(req.params).then((data) =>
+    {
+        const value = data;
+        let resText = "<br>";
+        resText = JSON.stringify(value) + "<br>";
+        res.send(resText);
+    }).catch((err) =>{
+        res.send("{message: }", err);
+    })
 });
 
 app.get("/departments", (req,res) =>{
@@ -82,9 +126,7 @@ app.get("/departments", (req,res) =>{
     }).catch((err)=>{
         res.send("{message: }",err);
     });
- 
 }) ;
-
 
 app.get("/managers", (req,res) =>{
     dataService.getManagers().then((data2) =>{
