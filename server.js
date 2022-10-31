@@ -1,13 +1,13 @@
 /*************************************************************************
-* WEB322– Assignment 2
+* WEB322– Assignment 3
 * I declare that this assignment is my own work in accordance with Seneca Academic
 Policy. No part * of this assignment has been copied manually or electronically from any
 other source
 * (including 3rd party web sites) or distributed to other students.
 *
-* Name: Dai Dung Lam, Student ID: 137 632 196 Date: October-4th-2022
+* Name: Dai Dung Lam, Student ID: 137 632 196 Date: October-31st-2022
 *
-* Your app’s URL (from Cyclic) : https://tan-lovely-hedgehog.cyclic.app/
+* Your app’s URL (from Heroku) : https://tan-lovely-hedgehog.cyclic.app/
 *
 *************************************************************************/ 
 const express = require("express");
@@ -105,7 +105,7 @@ app.get("/employees", (req,res) =>{
     }
 });
 
-app.get("/employee/:value", function(req,res){
+app.get("/employee/:employeeNum", function(req,res){
     dataService.getEmployeeByNum(req.params).then((data) =>
     {
         const value = data;
