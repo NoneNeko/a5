@@ -21,7 +21,7 @@ var HTTP_PORT = process.env.Port || 8080;
 
 function onHttpStart(){
     console.log("Express http server listening on: "+ HTTP_PORT);
-}
+};
 
 app.get("/", (req,res) => {
     res.sendFile(__dirname + "/views/home.html");
@@ -29,15 +29,15 @@ app.get("/", (req,res) => {
 
 app.get("/about", (req,res) =>{
     res.sendFile(__dirname +"/views/about.html");
-}) 
+}) ;
 
 app.get("/employees/add", (req,res) => {
     res.sendFile(__dirname + "/views/addEmployee.html");
-})
+});
 
 app.get("/images/add", (req,res) =>{
     res.sendFile(__dirname + "/views/addImage.html");
-})
+});
 
 const storage = multer.diskStorage({
     destination: "./public/images/uploaded",
@@ -50,9 +50,13 @@ const upload = multer({storage:storage});
 
 app.post("/images/add", upload.single("imageFile"), (req,res) =>{
     res.send("/images");
-})
+});
 
-
+app.get("/images", function(req,res){
+    fs.readdir("./public/images/uploaded", function(err, items){
+    res.json({"images" : items});
+    });
+});
 
 app.get("/employees", (req,res) =>{
     dataService.getAllEmployees().then((data)=>{
@@ -63,7 +67,7 @@ app.get("/employees", (req,res) =>{
     }).catch((err) =>{
         res.send("{message: }", err);
     });
-})
+});
 
 app.get("/departments", (req,res) =>{
     dataService.getDepartments().then((data1) =>{
@@ -75,7 +79,7 @@ app.get("/departments", (req,res) =>{
         res.send("{message: }",err);
     });
  
-}) 
+}) ;
 
 
 app.get("/managers", (req,res) =>{
@@ -87,14 +91,14 @@ app.get("/managers", (req,res) =>{
     }).catch((err) =>{
         res.send("{message: }", err);
     });
-})
+});
 
 app.use((req, res) =>{
     res.status(404).send("<b>Error 404: Page not found.</b>");
-})
+});
 
 dataService.initialize().then(() =>{
     app.listen(HTTP_PORT, onHttpStart);
 }).catch((err) =>{
     console.log(err);
-})
+});
