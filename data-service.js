@@ -4,7 +4,8 @@ module.exports ={
     initialize,
     getAllEmployees,
     getDepartments,
-    getManagers
+    getManagers,
+    addEmployee
 }
 let employees = [];
 let departments = [];
@@ -71,5 +72,18 @@ function getManagers()
     });
 }
 
+function addEmployee(employeeData){
+    return new Promise((resolve,reject) =>{
+        if(employeeData.isManager){
+            employeeData.isManager = true;
+        }
+        else{
+            employeeData.isManager = false;
+        }
+        employeeData.employeeNum = employees.length +1;
+        employees.push(employeeData);
+        resolve();
+    })
+}
     
 

@@ -12,12 +12,13 @@ other source
 *************************************************************************/ 
 const express = require("express");
 const multer = require("multer");
+const path =require("path");
 const fs = require("fs");
 const app = express();
 const dataService = require("./data-service");
 app.use(express.static('public'));
 
-var HTTP_PORT = process.env.Port || 8080;
+const HTTP_PORT = process.env.Port || 8080;
 
 function onHttpStart(){
     console.log("Express http server listening on: "+ HTTP_PORT);
@@ -46,7 +47,7 @@ const storage = multer.diskStorage({
         }
 });
 
-const upload = multer({storage:storage});
+const upload = multer({storage: storage});
 
 app.post("/images/add", upload.single("imageFile"), (req,res) =>{
     res.redirect("/images");
@@ -57,6 +58,9 @@ app.get("/images", function(req,res){
     res.json({"images" : items});
     });
 });
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 app.get("/employees", (req,res) =>{
     dataService.getAllEmployees().then((data)=>{
@@ -90,6 +94,12 @@ app.get("/managers", (req,res) =>{
         res.send(resText2);
     }).catch((err) =>{
         res.send("{message: }", err);
+    });
+});
+
+app.post("/employees/add", function(req,res){
+    dataService.addEmployee(req.body).then(() =>{
+        res.redirect("/employees");
     });
 });
 
