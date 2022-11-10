@@ -14,9 +14,12 @@ const express = require("express");
 const multer = require("multer");
 const path =require("path");
 const fs = require("fs");
+const exphbs = require("express-handlebars");
 const app = express();
 const dataService = require("./data-service");
 app.use(express.static('public'));
+
+const {engine} = require ("express-handlebars");
 
 const HTTP_PORT = process.env.Port || 8080;
 
@@ -24,8 +27,14 @@ function onHttpStart(){
     console.log("Express http server listening on: "+ HTTP_PORT);
 };
 
+app.engine(".hbs", engine({
+    extname:".hbs",
+    defaultLayout: "main"
+}));
+app.set("view engine", ".hbs");
+
 app.get("/", (req,res) => {
-    res.sendFile(__dirname + "/views/home.html");
+    res.render("/views/home.hbs");
 });
 
 app.get("/about", (req,res) =>{
