@@ -27,9 +27,33 @@ function onHttpStart(){
     console.log("Express http server listening on: "+ HTTP_PORT);
 };
 
+app.use(function(req,res,next){
+    let route = req.baseUrl + req.path;
+    app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
+    next();
+   });
+
+
 app.engine(".hbs", exphbs.engine({
     extname:".hbs",
-    defaultLayout: "main"
+    defaultLayout: "main",
+    helpers:{
+        navLink: function(url, options){
+            return '<li' +
+            ((url == app.locals.activeRoute) ? ' class="active" ' : '') +
+            '><a href=" ' + url + ' ">' + options.fn(this) + '</a></li>';
+           },
+           equal: function (lvalue, rvalue, options) {
+            if (arguments.length < 3)
+            throw new Error("Handlebars Helper equal needs 2 parameters");
+            if (lvalue != rvalue) {
+            return options.inverse(this);
+            } else {
+            return options.fn(this);
+            }
+           }
+    }
+
 }));
 app.set("view engine", ".hbs");
 
@@ -64,7 +88,7 @@ app.post("/images/add", upload.single("imageFile"), (req,res) =>{
 
 app.get("/images", function(req,res){
     fs.readdir("./public/images/uploaded", function(err, items){
-    res.json({"images" : items});
+    res.render("images", {data: items});
     });
 });
 
@@ -74,42 +98,30 @@ app.use(express.urlencoded({extended: true}));
 app.get("/employees", (req,res) =>{
     if(req.query.status){
         dataService.getEmployeesByStatus(req.query).then((data) =>{
-            const status = data;
-            let resText = "<br>";
-            resText = JSON.stringify(status) + "<br>";
-            res.send(resText);
+           res.render("employees", {employees: data});
         }).catch((err) =>{
-            res.send("{message: }", err);
+           res.render({message: "no results"});
         })
     }
     else if(req.query.department){
         dataService.getEmployeesByDepartment(req.query).then((data) =>{
-            const department = data;
-            let resText = "<br>";
-            resText = JSON.stringify(department) + "<br>";
-            res.send(resText);
+          res.render("employees", {employees:data});
         }).catch((err) =>{
-            res.send("{message: }", err);
+            res.render({message: "no results"});
         })
     }
     else if(req.query.manager){
         dataService.getEmployeesByManager(req.query).then((data) =>{
-            const manager = data;
-            let resText = "<br>";
-            resText = JSON.stringify(manager) + "<br>";
-            res.send(resText);
+            res.render("employees", {employees: data});
         }).catch((err) =>{
-            res.send("{message: }", err);
+            res.render({message: "no results"});
         })
     }
     else {
     dataService.getAllEmployees().then((data)=>{
-        const employee = data;
-        let resText = "<br>";
-        resText = JSON.stringify(employee) + "<br>";
-        res.send(resText);
+        res.render("employees", {employees: data});
     }).catch((err) =>{
-        res.send("{message: }", err);
+        res.render({message: "no results"});
     });
     }
 });
@@ -117,36 +129,30 @@ app.get("/employees", (req,res) =>{
 app.get("/employee/:employeeNum", function(req,res){
     dataService.getEmployeeByNum(req.params).then((data) =>
     {
-        const value = data;
-        let resText = "<br>";
-        resText = JSON.stringify(value) + "<br>";
-        res.send(resText);
+       res.render("employee", {employee: data});
     }).catch((err) =>{
-        res.send("{message: }", err);
+        res.render({message:"no results"});
     })
 });
 
 app.get("/departments", (req,res) =>{
-    dataService.getDepartments().then((data1) =>{
-        const department = data1;
-        let resText1 = "<br>";
-        resText1 = JSON.stringify(department) + "<br>";
-        res.send(resText1);
+    dataService.getDepartments().then((data) =>{
+       res.render("departments", {departments: data});
     }).catch((err)=>{
-        res.send("{message: }",err);
+        res.render({message: "no results"});
     });
 }) ;
 
-app.get("/managers", (req,res) =>{
-    dataService.getManagers().then((data2) =>{
-        const manager = data2;
-        let resText2 = "<br>";
-        resText2 = JSON.stringify(manager) + "<br>";
-        res.send(resText2);
-    }).catch((err) =>{
-        res.send("{message: }", err);
-    });
-});
+// app.get("/managers", (req,res) =>{
+//     dataService.getManagers().then((data2) =>{
+//         const manager = data2;
+//         let resText2 = "<br>";
+//         resText2 = JSON.stringify(manager) + "<br>";
+//         res.send(resText2);
+//     }).catch((err) =>{
+//         res.send("{message: }", err);
+//     });
+// });
 
 app.post("/employees/add", function(req,res){
     dataService.addEmployee(req.body).then(() =>{
