@@ -19,7 +19,7 @@ const app = express();
 const dataService = require("./data-service");
 app.use(express.static('public'));
 
-const {engine} = require ("express-handlebars");
+
 
 const HTTP_PORT = process.env.Port || 8080;
 
@@ -27,7 +27,7 @@ function onHttpStart(){
     console.log("Express http server listening on: "+ HTTP_PORT);
 };
 
-app.engine(".hbs", engine({
+app.engine(".hbs", exphbs.engine({
     extname:".hbs",
     defaultLayout: "main"
 }));
