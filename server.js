@@ -34,19 +34,19 @@ app.engine(".hbs", exphbs.engine({
 app.set("view engine", ".hbs");
 
 app.get("/", (req,res) => {
-    res.render("/views/home.hbs");
+    res.render("home");
 });
 
 app.get("/about", (req,res) =>{
-    res.sendFile(__dirname +"/views/about.html");
+    res.render("about");
 }) ;
 
 app.get("/employees/add", (req,res) => {
-    res.sendFile(__dirname + "/views/addEmployee.html");
+   res.render("addEmployee");
 });
 
 app.get("/images/add", (req,res) =>{
-    res.sendFile(__dirname + "/views/addImage.html");
+   res.render("addImage");
 });
 
 const storage = multer.diskStorage({
