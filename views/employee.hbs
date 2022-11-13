@@ -26,13 +26,13 @@ value="{{lastName}}" />
  </div>
  </div>
 
-<div class="col-md-6">
+
  <div class="form-group">
  <label for="employeeNum"></label>
  <input class="form-control" id="employeeNum" name="employeeNum" type="hidden"
 value="{{employeeNum}}" />
  </div>
- </div>
+
 
 <div class="col-md-6">
  <div class="form-group">
@@ -50,15 +50,15 @@ value="{{SSN}}" readonly />
  </div>
  </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="SSN">Address (Street):</label>
- <input class="form-control" id="addressStreet" name="SSN" type="addressStreet"
+ <input class="form-control" id="addressStreet" name="addressStreet" type="text"
 value="{{addressStreet}}" />
  </div>
  </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="addressCity">Address (City)</label>
  <input class="form-control" id="addressCity" name="addressCity" type="text"
@@ -66,7 +66,7 @@ value="{{addressCity}}" />
  </div>
  </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="addressState">Address (State):</label>
  <input class="form-control" id="addressState" name="addressState" type="text"
@@ -74,7 +74,7 @@ value="{{addressState}}" />
  </div>
  </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="addressPostal">Address (Zip Code):</label>
  <input class="form-control" id="addressPostal" name="addressPostal" type="text"
@@ -82,9 +82,9 @@ value="{{addressPostal}}" />
  </div>
  </div>
 
-<legend>Company Information</legend>
+<legend> Company Information</legend>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="isManager">Manager:</label>
  <input class="form-control" id="isManager" name="isManager" type="checkbox" value ="{{isManager}}"
@@ -95,7 +95,7 @@ checked
  </div>
  </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="employeeManagerNum">Employee's Manager Number:</label>
  <input class="form-control" id="employeeManagerNum" name="employeeManagerNum" type="text"
@@ -103,17 +103,22 @@ value="{{employeeManagerNum}}" />
  </div>
  </div>
 
- <div class="col-md-6">
+
+ <div class="col-md-1">
  <div class="form-group">
  <label for="status">Full Time:</label>
- <input class="form-control" id="status" name="status" type="radio"
+ <input class="form-control" id="fullTime" name="status" type="radio"
 value="{{status}}" 
     {{#equal status "Full Time"}}
     checked
     {{/equal}}
 />
+</div>
+ </div>
+ <div class="col-md-1">
+ <div class="form-group">
 <label for="status">Part Time:</label>
- <input class="form-control" id="status" name="status" type="radio"
+ <input class="form-control" id="partTime" name="status" type="radio"
 value="{{status}}" 
     {{#equal status "Part Time"}}
     checked
@@ -122,35 +127,63 @@ value="{{status}}"
  </div>
  </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="department">Department:</label>
  <input class="form-control" id="department" name="department" type="select"
 value="{{department}}"
-    {{#equal}}
+    {{#equal department "1"}}
+    selected
+    {{/equal}}
+    {{#equal department "2"}}
+    selected
+    {{/equal}}
+    {{#equal department "3"}}
+    selected
+    {{/equal}}
+    {{#equal department "4"}}
+    selected
+    {{/equal}}
+    {{#equal department "5"}}
+    selected
+    {{/equal}}
+    {{#equal department "6"}}
+    selected
+    {{/equal}}
+    {{#equal department "7"}}
+    selected
+    {{/equal}}
 />
  </div>
  </div>
 
-<div class="col-md-6">
+<div class="col-md-3">
  <div class="form-group">
  <label for="hireDate">Hire Date:</label>
  <input class="form-control" id="hireDate" name="hireDate" type="text"
 value="{{hireDate}}" readonly/>
  </div>
  </div>
-
-
-
-
-
  </div>
- 
  </fieldset>
- {{/each}}
+ 
+ 
+ <script>
+    function checkStatus(){
+     if(document.getElementById("fullTime").checked){
+       document.getElementsByName("status").value = "Full Time";
+    }
+    else if(document.getElementById("partTime").checked)
+    {
+        document.getElementsByName("status").value = "Part Time";
+    }
+    }
+   
+</script>
  <hr />
- <input type="submit" class="btn btn-primary pull-right" value="Update Employee" /><br
+ <input type="submit" class="btn btn-primary pull-right" value="Update Employee" onclick="checkStatus()" /><br
 /><br /><br />
  </form>
+ {{/each}}
  </div>
 </div>

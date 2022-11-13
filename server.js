@@ -154,6 +154,13 @@ app.get("/departments", (req,res) =>{
 //     });
 // });
 
+app.post("/employee/update", (req, res) => {
+    dataService.updateEmployee(req.body).then(() =>{
+        console.log(req.body);
+        res.redirect("/employees");
+    })
+   });
+
 app.post("/employees/add", function(req,res){
     dataService.addEmployee(req.body).then(() =>{
         res.redirect("/employees");

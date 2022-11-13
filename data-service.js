@@ -9,7 +9,8 @@ module.exports ={
     getEmployeesByStatus,
     getEmployeesByDepartment,
     getEmployeesByManager,
-    getEmployeeByNum
+    getEmployeeByNum,
+    updateEmployee
 }
 let employees = [];
 let departments = [];
@@ -140,4 +141,16 @@ function getEmployeeByNum(num){
     })
 }
     
-
+function updateEmployee(employeeData)
+{
+    return new Promise((resolve, reject) =>{
+        for (var i = 0; i < employees.length; i++)
+        {
+            if(employees[i].employeeNum == employeeData.employeeNum)
+            {
+                employees[i] = employeeData;
+                resolve();
+            }
+        }
+    })
+}
