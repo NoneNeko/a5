@@ -61,8 +61,8 @@ var Department = sequelize.define('Department', {
         primaryKey: true,
         autoIncrement: true
     }, 
-    departmentName: Sequelize.STRING},
-    {
+    departmentName: Sequelize.STRING
+    },{
         createdAt: false, 
         updatedAt: false 
 });
