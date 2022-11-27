@@ -67,7 +67,6 @@ var Department = sequelize.define('Department', {
         updatedAt: false 
 });
 
-Employee.hasOne(Department);
 
 function initialize(){
     return new Promise((resolve, reject) =>{
