@@ -7,7 +7,7 @@ other source
 *
 * Name: Dai Dung Lam, Student ID: 137 632 196 Date: November-13rd-2022
 *
-* Your app’s URL (from Heroku) : https://ghastly-phantom-23786.herokuapp.com/
+* Your app’s URL (from Cyclic) : https://long-jade-walkingstick-kit.cyclic.app/
 *
 *************************************************************************/ 
 const express = require("express");
