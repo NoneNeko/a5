@@ -64,7 +64,7 @@ app.get("/about", (req,res) =>{
 }) ;
 
 app.get("/employees/add", (req,res) => {
-    dataService.getDepartments(req.body).then(() =>{
+    dataService.getDepartments().then((data) =>{
         res.render("addEmployee", {departments: data});
     }).catch((e) =>{
         res.render("addEmployee", {departments: []});
@@ -99,7 +99,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.get("/employees", (req,res) =>{
     if(req.query.status){
-        dataService.getEmployeesByStatus(req.query).then((data) =>{
+        dataService.getEmployeesByStatus(req.query.status).then((data) =>{
             if(data.length > 0)
             {
                 res.render("employees", {employees: data});
@@ -113,7 +113,7 @@ app.get("/employees", (req,res) =>{
         })
     }
     else if(req.query.department){
-        dataService.getEmployeesByDepartment(req.query).then((data) =>{
+        dataService.getEmployeesByDepartment(req.query.department).then((data) =>{
             if(data.length > 0)
             {
                 res.render("employees", {employees: data});
@@ -126,7 +126,7 @@ app.get("/employees", (req,res) =>{
         })
     }
     else if(req.query.manager){
-        dataService.getEmployeesByManager(req.query).then((data) =>{
+        dataService.getEmployeesByManager(req.query.manager).then((data) =>{
             if(data.length > 0)
             {
                 res.render("employees", {employees: data});
@@ -166,12 +166,10 @@ app.get("/employee/:employeeNum", (req, res) => {
     viewData.employee = null; // set employee to null if there was an error
     }).then(dataService.getDepartments)
     .then((data) => {
-    viewData.departments = data; // store department data in the "viewData" object as
-   "departments"
+    viewData.departments = data; // store department data in the "viewData" object as "departments"
     // loop through viewData.departments and once we have found the departmentId that matches
     // the employee's "department" value, add a "selected" property to the matching
     // viewData.departments object
-   13
     for (let i = 0; i < viewData.departments.length; i++) {
     if (viewData.departments[i].departmentId == viewData.employee.department) {
     viewData.departments[i].selected = true;

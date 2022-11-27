@@ -215,10 +215,29 @@ function updateEmployee(employeeData){
                     employeeData[i] = null;
                 }
             }
-        resolve(Employee.update(employeeData)).catch((e) =>{
-            reject("unable to update employee");
+       Employee.update({
+        firstName: employeeData.firstName,
+        lastName: employeeData.lastName,
+        email: employeeData.email,
+        addressStreet: employeeData.addressStreet,
+        addressCity: employeeData.addressCity,
+        addressPostal: employeeData.addressPostal,
+        addressState: employeeData.addressPostal,
+        isManager: employeeData.isManager,
+        employeeManagerNum: employeeData.employeeManagerNum,
+        status: employeeData.status,
+        department: employeeData.department
+       },{
+        where:{
+            employeeNum : employeeData.employeeNum
+        }}).then(() =>{
+            resolve(Employee)
+        }).catch((e) =>{
+            reject("unable to update employee")
         })
-   }) 
+   }).catch((e) =>{
+    reject("unable to update employee")
+    })
 })};
 
 

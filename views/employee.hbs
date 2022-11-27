@@ -1,6 +1,6 @@
 <div class="row">
  <div class="col-md-12">
-    {{#each viewData.employee}}
+  {{#each viewData.employee}}
     
          <h2>{{firstName}} {{lastName}} - Employee:
 {{employeeNum}}</h2>
@@ -127,21 +127,7 @@ value="{{status}}"
  </div>
  </div>
 
-<div class="col-md-3">
- <div class="form-group">
- <label for="department">Department:</label>
- {{#if department}}
- <select class="form-control" name="department" id="department">
- {{#each department}}
- <option value="{{departmentId}}" {{#if selected}} selected {{/if}} >{{departmentName}}
-</option>
- {{/each}}
- </select>
-{{else}}
- <div>No Departments</div>
-{{/if}}
- </div>
- </div>
+
 
 <div class="col-md-3">
  <div class="form-group">
@@ -153,23 +139,28 @@ value="{{hireDate}}" readonly/>
  </div>
  </fieldset>
  
+ {{/each}}
  
- <script>
-    function checkStatus(){
-     if(document.getElementById("fullTime").checked){
-       document.getElementsByName("status").value = "Full Time";
-    }
-    else if(document.getElementById("partTime").checked)
-    {
-        document.getElementsByName("status").value = "Part Time";
-    }
-    }
-   
-</script>
  <hr />
- <input type="submit" class="btn btn-primary pull-right" value="Update Employee" onclick="checkStatus()" /><br
+ <div class="col-md-3">
+ <div class="form-group">
+ <label for="department">Department:</label>
+ {{#if viewData.departments}}
+ <select class="form-control" name="department" id="department">
+ {{#each viewData.departments}}
+ <option value="{{departmentId}}" {{#if selected}} selected {{/if}} >{{departmentName}}
+</option>
+ {{/each}}
+ </select>
+{{else}}
+ <div>No Departments</div>
+{{/if}}
+ </div>
+ </div>
+
+ <input type="submit" class="btn btn-primary pull-right" value="Update Employee" /><br
 /><br /><br />
  </form>
- {{/each}}
+ 
  </div>
 </div>
