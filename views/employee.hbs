@@ -1,6 +1,6 @@
 <div class="row">
  <div class="col-md-12">
-    {{#each employee}}
+    {{#each viewData.employee}}
     
          <h2>{{firstName}} {{lastName}} - Employee:
 {{employeeNum}}</h2>
@@ -130,30 +130,16 @@ value="{{status}}"
 <div class="col-md-3">
  <div class="form-group">
  <label for="department">Department:</label>
- <input class="form-control" id="department" name="department" type="select"
-value="{{department}}"
-    {{#equal department "1"}}
-    selected
-    {{/equal}}
-    {{#equal department "2"}}
-    selected
-    {{/equal}}
-    {{#equal department "3"}}
-    selected
-    {{/equal}}
-    {{#equal department "4"}}
-    selected
-    {{/equal}}
-    {{#equal department "5"}}
-    selected
-    {{/equal}}
-    {{#equal department "6"}}
-    selected
-    {{/equal}}
-    {{#equal department "7"}}
-    selected
-    {{/equal}}
-/>
+ {{#if viewData.departments}}
+ <select class="form-control" name="department" id="department">
+ {{#each viewData.departments}}
+ <option value="{{departmentId}}" {{#if selected}} selected {{/if}} >{{departmentName}}
+</option>
+ {{/each}}
+ </select>
+{{else}}
+ <div>No Departments</div>
+{{/if}}
  </div>
  </div>
 

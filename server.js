@@ -19,8 +19,6 @@ const app = express();
 const dataService = require("./data-service");
 app.use(express.static('public'));
 
-
-
 const HTTP_PORT = process.env.Port || 8080;
 
 function onHttpStart(){
@@ -66,7 +64,11 @@ app.get("/about", (req,res) =>{
 }) ;
 
 app.get("/employees/add", (req,res) => {
-   res.render("addEmployee");
+    dataService.getDepartments(req.body).then(() =>{
+        res.render("addEmployee", {departments: data});
+    }).catch((e) =>{
+        res.render("addEmployee", {departments: []});
+    })
 });
 
 app.get("/images/add", (req,res) =>{
@@ -98,46 +100,104 @@ app.use(express.urlencoded({extended: true}));
 app.get("/employees", (req,res) =>{
     if(req.query.status){
         dataService.getEmployeesByStatus(req.query).then((data) =>{
-           res.render("employees", {employees: data});
+            if(data.length > 0)
+            {
+                res.render("employees", {employees: data});
+            }
+            else{
+                res.render("employees",{ message: "no results" });
+            }
+           
         }).catch((err) =>{
            res.render({message: "no results"});
         })
     }
     else if(req.query.department){
         dataService.getEmployeesByDepartment(req.query).then((data) =>{
-          res.render("employees", {employees:data});
+            if(data.length > 0)
+            {
+                res.render("employees", {employees: data});
+            }
+            else{
+                res.render("employees",{ message: "no results" });
+            }
         }).catch((err) =>{
             res.render({message: "no results"});
         })
     }
     else if(req.query.manager){
         dataService.getEmployeesByManager(req.query).then((data) =>{
-            res.render("employees", {employees: data});
+            if(data.length > 0)
+            {
+                res.render("employees", {employees: data});
+            }
+            else{
+                res.render("employees",{ message: "no results" });
+            }
         }).catch((err) =>{
             res.render({message: "no results"});
         })
     }
     else {
     dataService.getAllEmployees().then((data)=>{
-        res.render("employees", {employees: data});
+        if(data.length > 0)
+        {
+            res.render("employees", {employees: data});
+        }
+        else{
+            res.render("employees",{ message: "no results" });
+        }
     }).catch((err) =>{
         res.render({message: "no results"});
     });
     }
 });
 
-app.get("/employee/:employeeNum", function(req,res){
-    dataService.getEmployeeByNum(req.params).then((data) =>
-    {
-       res.render("employee", {employee: data});
-    }).catch((err) =>{
-        res.render({message:"no results"});
-    })
-});
+app.get("/employee/:employeeNum", (req, res) => {
+    // initialize an empty object to store the values
+    let viewData = {};
+    dataService.getEmployeeByNum(req.params.employeeNum).then((data) => {
+    if (data) {
+    viewData.employee = data; //store employee data in the "viewData" object as "employee"
+    } else {
+    viewData.employee = null; // set employee to null if none were returned
+    }
+    }).catch(() => {
+    viewData.employee = null; // set employee to null if there was an error
+    }).then(dataService.getDepartments)
+    .then((data) => {
+    viewData.departments = data; // store department data in the "viewData" object as
+   "departments"
+    // loop through viewData.departments and once we have found the departmentId that matches
+    // the employee's "department" value, add a "selected" property to the matching
+    // viewData.departments object
+   13
+    for (let i = 0; i < viewData.departments.length; i++) {
+    if (viewData.departments[i].departmentId == viewData.employee.department) {
+    viewData.departments[i].selected = true;
+    }
+    }
+    }).catch(() => {
+    viewData.departments = []; // set departments to empty if there was an error
+    }).then(() => {
+    if (viewData.employee == null) { // if no employee - return an error
+    res.status(404).send("Employee Not Found");
+    } else {
+    res.render("employee", { viewData: viewData }); // render the "employee" view
+    }
+    });
+   });
+   
 
 app.get("/departments", (req,res) =>{
     dataService.getDepartments().then((data) =>{
-       res.render("departments", {departments: data});
+        if(data.length > 0)
+            {
+                res.render("departments", {departments: data});
+            }
+            else{
+                res.render("departments",{ message: "no results" });
+            }
     }).catch((err)=>{
         res.render({message: "no results"});
     });
@@ -162,11 +222,44 @@ app.post("/employee/update", (req, res) => {
    });
 
 app.post("/employees/add", function(req,res){
-    dataService.addEmployee(req.body).then(() =>{
+    dataService.addEmployee(req.body).then(() => {
         res.redirect("/employees");
     });
 });
 
+app.get("/departments/add", (req, res) => {
+    res.render("addDepartment");
+});
+
+app.post("/departments/add", (req, res) => {
+    dataService.addDepartment(req.body).then(() => {
+        res.redirect("/departments");
+    });
+});
+
+app.post("/department/update", (req, res) => {
+    dataService.updateDepartment(req.body).then(() =>{
+        console.log(req.body);
+        res.redirect("/departments");
+    })
+   });
+
+app.get("/department/:departmentId", (req,res) =>{
+    dataService.getDepartmentById(req.params.departmentId).then((data) =>
+    {
+       res.render("department", {department: data});
+    }).catch((err) =>{
+        res.status(404).send("Department Not Found");
+    })
+});
+
+app.get("/employee/delete/:empNum", (req,res) =>{
+    dataService.deleteEmployeeByNum(req.params.empNum).then((data) =>{
+        res.redirect("/employees");
+    }).catch((e) =>{
+       res.status(500).send("Unable to Remove Employee / Employee not found");
+    })
+})
 app.use((req, res) =>{
     res.status(404).send("<b>Error 404: Page not found.</b>");
 });
