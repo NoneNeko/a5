@@ -17,7 +17,7 @@ module.exports ={
 
 const Sequelize = require('sequelize');
 
-var sequelize = new Sequelize('xmrvvrtf', 'xmrvvrtf', 'puSoFMFOMAy4fDyfdnRFw0tczXMp0On4', {
+var sequelize = new Sequelize('nmrnzzcm', 'nmrnzzcm', 'vTI7ab4daW6onr21sglIVGuoRnRx84g_', {
     host: 'mouse.db.elephantsql.com',
     dialect: 'postgres',
     port: 5432,
@@ -66,6 +66,8 @@ var Department = sequelize.define('Department', {
         createdAt: false, 
         updatedAt: false 
 });
+
+Employee.hasOne(Department);
 
 function initialize(){
     return new Promise((resolve, reject) =>{
@@ -209,9 +211,9 @@ function updateEmployee(employeeData){
         sequelize.sync().then(() =>{
             for (var i in employeeData)
             {
-                if(employeeData.employeeManagerNum == "")
+                if(employeeData == "")
                 {
-                    employeeData[i].employeeManagerNum = null;
+                    employeeData[i] = null;
                 }
             }
         resolve(Employee.update(employeeData)).catch((e) =>{
