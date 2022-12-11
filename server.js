@@ -1,15 +1,15 @@
-/*************************************************************************
-* WEB322– Assignment 5
-* I declare that this assignment is my own work in accordance with Seneca Academic
-Policy. No part * of this assignment has been copied manually or electronically from any
-other source
-* (including 3rd party web sites) or distributed to other students.
-*
-* Name: Dai Dung Lam, Student ID: 137 632 196 Date: November-27th-2022
-*
-* Your app’s URL (from Cyclic) : https://cute-pink-wasp-belt.cyclic.app
-*
-*************************************************************************/ 
+// /*************************************************************************
+// * WEB322– Assignment 6
+// * I declare that this assignment is my own work in accordance with Seneca Academic
+// Policy. No part * of this assignment has been copied manually or electronically from any
+// other source
+// * (including 3rd party web sites) or distributed to other students.
+// *
+// * Name: Dai Dung Lam, Student ID: 137 632 196 Date: November-27th-2022
+// *
+// * Your app’s URL (from Cyclic) : https://cute-pink-wasp-belt.cyclic.app
+// *
+// *************************************************************************/ 
 const express = require("express");
 const multer = require("multer");
 const path =require("path");
@@ -17,38 +17,23 @@ const fs = require("fs");
 const exphbs = require("express-handlebars");
 const app = express();
 const dataService = require("./data-service");
-const dataServiceAuth = require("./data-service-auth.js")
+const dataServiceAuth = require("./data-service-auth")
 const clientSessions = require('client-sessions');
 app.use(express.static('public'));
 
 
 const HTTP_PORT = process.env.Port || 8080;
 
-app.use(function(req,res,next){
-    let route = req.baseUrl + req.path;
-    app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
-    next();
-   });
-
-app.use(clientSessions({
-    cookieName: "session",
-    secret: "assignment6ForWeb322",
-    duration: 2 * 60 * 1000,
-    activeDuration: 1000 * 60
-}));
-
-app.use(function(req, res, next) {
-    res.locals.session = req.session;
-    next();
+const storage = multer.diskStorage({
+    destination: "./public/images/uploaded",
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+        }
 });
 
-function ensureLogin(req, res, next) {
-    if (!req.session.user) {
-      res.redirect("/login");
-    } else {
-      next();
-    }
-  }
+const upload = multer({storage: storage});
+
+
 
 app.engine(".hbs", exphbs.engine({
     extname:".hbs",
@@ -71,7 +56,36 @@ app.engine(".hbs", exphbs.engine({
     }
 
 }));
+
 app.set("view engine", ".hbs");
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(function(req,res,next){
+    let route = req.baseUrl + req.path;
+    app.locals.activeRoute = (route == "/") ? "/" : route.replace(/\/$/, "");
+    next();
+   });
+
+app.use(clientSessions({
+    cookieName: "session",
+    secret: "assignment6ForWeb322",
+    duration: 2 * 60 * 1000,
+    activeDuration: 1000 * 60
+}));
+
+app.use(function(req, res, next) {
+    res.locals.session = req.session;
+    next();
+});
+
+function ensureLogin(req,res,next) {
+    if (!(req.session.user)) {
+        res.redirect("/login");
+    }
+    else { 
+        next(); 
+    }
+};
 
 app.get("/", (req,res) => {
     res.render("home");
@@ -81,34 +95,9 @@ app.get("/about", (req,res) =>{
     res.render("about");
 }) ;
 
-app.get("/login" ,(req,res) =>{
-    res.render("login");
-});
-
-app.get("/register" , (req,res) =>{
-    res.render("register");
-});
-
-app.get("/employees/add", ensureLogin, (req,res) => {
-    dataService.getDepartments().then((data) =>{
-        res.render("addEmployee", {departments: data});
-    }).catch((e) =>{
-        res.render("addEmployee", {departments: []});
-    })
-});
-
 app.get("/images/add", ensureLogin, (req,res) =>{
-   res.render("addImage");
-});
-
-const storage = multer.diskStorage({
-    destination: "./public/images/uploaded",
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + path.extname(file.originalname));
-        }
-});
-
-const upload = multer({storage: storage});
+    res.render("addImage");
+ });
 
 app.post("/images/add",ensureLogin, upload.single("imageFile"), (req,res) =>{
     res.redirect("/images");
@@ -120,8 +109,14 @@ app.get("/images", ensureLogin, function(req,res){
     });
 });
 
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.get("/employees/add", ensureLogin, (req,res) => {
+    dataService.getDepartments().then((data) =>{
+        res.render("addEmployee", {departments: data});
+    }).catch((e) =>{
+        res.render("addEmployee", {departments: []});
+    })
+});
+
 
 app.get("/employees", ensureLogin, (req,res) =>{
     if(req.query.status){
@@ -177,6 +172,19 @@ app.get("/employees", ensureLogin, (req,res) =>{
         res.render({message: "no results"});
     });
     }
+});
+
+app.post("/employee/update", ensureLogin, (req, res) => {
+    dataService.updateEmployee(req.body).then(() =>{
+        console.log(req.body);
+        res.redirect("/employees");
+    })
+   });
+
+app.post("/employees/add", ensureLogin, function(req,res){
+    dataService.addEmployee(req.body).then(() => {
+        res.redirect("/employees");
+    });
 });
 
 app.get("/employee/:employeeNum", ensureLogin, (req, res) => {
@@ -238,18 +246,7 @@ app.get("/departments", ensureLogin, (req,res) =>{
 //     });
 // });
 
-app.post("/employee/update", ensureLogin, (req, res) => {
-    dataService.updateEmployee(req.body).then(() =>{
-        console.log(req.body);
-        res.redirect("/employees");
-    })
-   });
 
-app.post("/employees/add", ensureLogin, function(req,res){
-    dataService.addEmployee(req.body).then(() => {
-        res.redirect("/employees");
-    });
-});
 
 app.get("/departments/add", ensureLogin, (req, res) => {
     res.render("addDepartment");
@@ -285,31 +282,34 @@ app.get("/employee/delete/:empNum", ensureLogin,(req,res) =>{
     })
 })
 
-
-app.use((req, res) =>{
-    res.status(404).send("<b>Error 404: Page not found.</b>");
+app.get("/login" ,(req,res) =>{
+    res.render("login");
 });
 
-
-
-app.post("/register" , (req,res) =>{
-    dataServiceAuth.registerUser(req.body).then(() =>{
-        res.render("register", {successMessage: "User created"})
-    }).catch(err => res.render("register", {errorMessage: err, userName: req.body.userName}))
+app.get("/register" , (req,res) =>{
+    res.render("register");
 });
 
-app.post("/login" , (req,res) =>{
+app.post("/register", (req,res) => {
+    dataServiceAuth.registerUser(req.body)
+    .then(() => res.render("register", {successMessage: "User created" } ))
+    .catch (err => res.render("register", {errorMessage: err, userName:req.body.userName }) )
+});
+
+app.post("/login", (req,res) => {
     req.body.userAgent = req.get('User-Agent');
-    dataServiceAuth.checkUser(req.body).then((user) =>{
-        req.session.user ={
-            userName: user.userName,
-            email: user.email,
-            loginHistory: user.loginHistory
+    dataServiceAuth.checkUser(req.body)
+    .then(user => {
+        req.session.user = {
+            userName:user.userName,
+            email:user.email,
+            loginHistory:user.loginHistory
         }
         res.redirect("/employees");
-    }).catch((err) =>{
-        res.render("login",  {errorMessage: err, userName: req.body.userName})
     })
+    .catch(err => {
+        res.render("login", {errorMessage:err, userName:req.body.userName} )
+    }) 
 });
 
 app.get("/logout", (req,res) =>{
@@ -318,8 +318,13 @@ app.get("/logout", (req,res) =>{
 })
 
 app.get("/userHistory", ensureLogin, (req,res) =>{
-    res.render("userHistory");
+    res.render("userHistory", {user: req.session.user});
 })
+
+
+app.use((req, res) =>{
+    res.status(404).send("<b>Error 404: Page not found.</b>");
+});
 
 dataService.initialize()
 .then(dataServiceAuth.initialize)
