@@ -1,4 +1,4 @@
-{{!-- 
+
     <div class="row">
     <div class="col-md-12">
         <h2> Log In </h2>
@@ -24,33 +24,4 @@
             <input class="btn btn-success pull-right" type="submit" value="Login">
         </form>
     </div>
-    </div> --}}
-
-<div class="row">
-    <div class="col-md-12">
-        <h2>Log In</h2>
-        <hr>
-        {{#if errorMessage}}    
-            <div class="alert alert-danger">
-                <strong>Error:</strong>
-                {{errorMessage}}
-            </div>
-        {{/if}}
-        <form method="post" action="/login">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <input class="form-control" id="userName" name="userName" type="text" placeholder="User Name" required="" value={{userName}}>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="form-group">
-                        <input class="form-control" id="password" name="password" type="password" placeholder="Password" required="">
-                    </div>
-                </div>
-            </div>
-            <input type="submit" class="btn btn-success pull-right" value="Login">
-        </form>
-</div>
+    </div>
