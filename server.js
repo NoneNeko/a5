@@ -318,7 +318,7 @@ app.get("/logout", (req,res) =>{
 })
 
 app.get("/userHistory", ensureLogin, (req,res) =>{
-    res.render("userHistory", {user: req.session.user});
+    res.render("userHistory");
 })
 
 
