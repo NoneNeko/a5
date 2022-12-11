@@ -24,12 +24,12 @@ let User;
 
 function initialize() {
     return new Promise((resolve, reject) =>{
-         let db = mongoose.createConnection("mongodb+srv://dbUser:Supermeo2001@a6.llx8esk.mongodb.net/?retryWrites=true&w=majority")
+         let db = mongoose.createConnection("mongodb+srv://dbUser:Supermeo2001@a6.llx8esk.mongodb.net/?retryWrites=true&w=majority", { useNewUrlParser: true })
         db.on('error', (err) =>{
             reject (err);
         })
         db.once('open', () =>{
-            User = db.model("Users", userSchema);
+            User = db.model("users", userSchema);
             resolve();
         })
     })
@@ -65,7 +65,7 @@ function registerUser(userData){
                                     reject("There was an error creating the user: " + err);
                                 }
                             }else{
-                                resolve();
+                                resolve(newUser);
                             }
                         })
                     }
@@ -81,7 +81,7 @@ function checkUser(userData){
             bcrypt.compare(userData.password, foundUser.password).then(res =>{
                 if(res == true)
                 {
-                    users[0].loginHistory.push({dateTime : (new Date()).toString(), userAgent:userData.userAgent});
+                    foundUser.loginHistory.push({dateTime : (new Date()).toString(), userAgent:userData.userAgent});
                     User.update(
                         {
                        userName: foundUser.userName 
@@ -95,7 +95,7 @@ function checkUser(userData){
                             multi: false
                         }
                     ).exec().then(() =>{
-                        {resolve(foundUser)}
+                        resolve(foundUser)
                     }).catch(err =>{
                         reject("There was an error verifying the user: " + err);
                     })
